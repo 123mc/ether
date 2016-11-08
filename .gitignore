@@ -27,3 +27,4 @@ hs_err*.log
 # LWJGL Temp
 .lwjgl
 
+/.nb-gradle/
