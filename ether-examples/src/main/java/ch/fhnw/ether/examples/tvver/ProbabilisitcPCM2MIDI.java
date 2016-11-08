@@ -1,4 +1,4 @@
-package ch.fhnw.tvver;
+package ch.fhnw.ether.examples.tvver;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package ch.fhnw.tvver;
+package ch.fhnw.ether.examples.tvver;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import ch.fhnw.ether.media.RenderCommandException;
 import ch.fhnw.ether.media.RenderProgram;
 
 public abstract class AbstractPCM2MIDI {
-	enum Flags {SYNTH, WAVE, REPORT}
+	public enum Flags {SYNTH, WAVE, REPORT}
 
 	private final PCM2MIDIShell b2ms;
 	private       Throwable     exception;

@@ -1,4 +1,4 @@
-package ch.fhnw.tvver;
+package ch.fhnw.ether.examples.tvver;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -33,7 +33,7 @@ import ch.fhnw.ether.media.RenderProgram;
 import ch.fhnw.ether.platform.Platform;
 import ch.fhnw.ether.ui.ParameterWindow;
 import ch.fhnw.ether.ui.ParameterWindow.Flag;
-import ch.fhnw.tvver.AbstractPCM2MIDI.Flags;
+import ch.fhnw.ether.examples.tvver.AbstractPCM2MIDI.Flags;
 import ch.fhnw.util.ByteList;
 import ch.fhnw.util.Log;
 import ch.fhnw.util.TextUtilities;
@@ -173,7 +173,7 @@ public final class PCM2MIDIShell {
 			log.info("Usage: " + PCM2MIDIShell.class.getName() + " <audio_file> <class>");
 			System.exit(0);
 		}
-		
+
 		Platform.get().init();
 		
 		File        src    = new File(args[0]);
@@ -181,7 +181,7 @@ public final class PCM2MIDIShell {
 
 		report.println(COLUMNS);
 
-		Class<AbstractPCM2MIDI> cls = (Class<AbstractPCM2MIDI>)Class.forName("ch.fhnw.tvver." + args[1]);
+		Class<AbstractPCM2MIDI> cls = (Class<AbstractPCM2MIDI>)Class.forName("ch.fhnw.ether.examples.tvver." + args[1]);
 		
 		AbstractPCM2MIDI pcm2midi = cls.getConstructor(File.class).newInstance(src);
 		
