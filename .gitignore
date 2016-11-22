@@ -28,3 +28,5 @@ hs_err*.log
 .lwjgl
 
 /.nb-gradle/
+
+*_report*.txt
