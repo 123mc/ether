@@ -1,42 +1,31 @@
 package ch.fhnw.ether.examples.tvver;
 
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.JavaSoundTarget;
+import ch.fhnw.ether.audio.URLAudioSource;
+import ch.fhnw.ether.examples.tvver.AbstractPCM2MIDI.Flags;
+import ch.fhnw.ether.media.RenderCommandException;
+import ch.fhnw.ether.media.RenderProgram;
+import ch.fhnw.ether.platform.Platform;
+import ch.fhnw.ether.ui.ParameterWindow;
+import ch.fhnw.ether.ui.ParameterWindow.Flag;
+import ch.fhnw.util.ByteList;
+import ch.fhnw.util.Log;
+import ch.fhnw.util.TextUtilities;
+
+import javax.sound.midi.*;
+import javax.sound.sampled.AudioFileFormat.Type;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiChannel;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Track;
-import javax.sound.sampled.AudioFileFormat.Type;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-
-import ch.fhnw.ether.audio.IAudioRenderTarget;
-import ch.fhnw.ether.audio.JavaSoundTarget;
-import ch.fhnw.ether.audio.URLAudioSource;
-import ch.fhnw.ether.media.RenderCommandException;
-import ch.fhnw.ether.media.RenderProgram;
-import ch.fhnw.ether.platform.Platform;
-import ch.fhnw.ether.ui.ParameterWindow;
-import ch.fhnw.ether.ui.ParameterWindow.Flag;
-import ch.fhnw.ether.examples.tvver.AbstractPCM2MIDI.Flags;
-import ch.fhnw.util.ByteList;
-import ch.fhnw.util.Log;
-import ch.fhnw.util.TextUtilities;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 
 public final class PCM2MIDIShell {
 	private static final Log log = Log.create();
@@ -169,15 +158,42 @@ public final class PCM2MIDIShell {
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Throwable {
-		if(args.length == 0) {
+
+		/*
+				How to call main():
+
+				Argument 1: Relative file path to .mid file in ./resources/
+											e.g.  "midi/scale.mid"
+
+				Argument 2: Class name of own implementation
+											e.g. "ProbabilisitcPCM2MIDI"
+
+		 */
+
+		if(args.length != 2) {
 			log.info("Usage: " + PCM2MIDIShell.class.getName() + " <audio_file> <class>");
 			System.exit(0);
 		}
 
+		String midiFilePath = args[0];
+		String className    = args[1];
+
 		Platform.get().init();
-		
-		File        src    = new File(args[0]);
-		PrintWriter report = new PrintWriter(new File(src.getParent(), args[1] + "_report.txt"));
+
+		File src = getResource(midiFilePath);
+
+		String reportFileName = className + "_report.txt";
+		String reportFilePath = src.getParent() + reportFileName;
+
+		System.out.println("Relative MIDI file path    : " + midiFilePath);
+		System.out.println("Absolute MIDI file path    : " + src.getAbsolutePath() );
+		System.out.println("Class name                 : " + className);
+		System.out.println("Target report file name    : " + reportFileName);
+		System.out.println("Target report file path    : " + reportFilePath);
+
+
+		PrintWriter report = new PrintWriter(reportFileName, "UTF-8");
+		// PrintWriter report = new PrintWriter(new File(src.getParent(), ));
 
 		report.println(COLUMNS);
 
@@ -226,5 +242,17 @@ public final class PCM2MIDIShell {
 
 	public SortedSet<MidiEvent> getRefMidi() {
 		return midiRef;
+	}
+
+	private static File getResource(String midiFilePath) throws URISyntaxException {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		URL url = classLoader.getResource(midiFilePath);
+
+		if(url == null) {
+			System.out.println("FILE DOES NOT EXIST: '" + midiFilePath + "'");
+			System.exit(9);
+		}
+
+		return new File(url.toURI());
 	}
 }
