@@ -30,3 +30,5 @@ hs_err*.log
 /.nb-gradle/
 
 *_report*.txt
+
+/ether-examples/src/main/resources/midi/*.wav
