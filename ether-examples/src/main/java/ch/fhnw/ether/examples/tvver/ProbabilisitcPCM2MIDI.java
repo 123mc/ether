@@ -12,8 +12,11 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import ch.fhnw.ether.audio.IAudioRenderTarget;
+import ch.fhnw.ether.audio.fx.AutoGain;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.IScheduler;
 import ch.fhnw.ether.media.Parameter;
@@ -34,7 +37,12 @@ public class ProbabilisitcPCM2MIDI extends AbstractPCM2MIDI {
 
 	@Override
 	protected void initializePipeline(RenderProgram<IAudioRenderTarget> program) {
+		program.addLast(new AutoGain());
 		program.addLast(new PCM2MIDI());
+		
+		JFrame frame = new JFrame();
+		frame.setVisible(true);
+		frame.add(new JLabel("Hello World"));
 	}
 
 	private static final Parameter P = new Parameter("p", "Probability", 0, 1, 1);
