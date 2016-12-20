@@ -30,6 +30,7 @@ public class PeakFinder {
                     "Stack's capacity must be positive");
         }
         storage = new float[capacity];
+        top=-1;
         init();
     }
 
@@ -41,8 +42,6 @@ public class PeakFinder {
 
 
     void push(float value){
-//        if (top == storage.length)
-//            throw new EmptyStackException();
         top = (top+1)%(storage.length-1);
         storage[top] = value;
     }
