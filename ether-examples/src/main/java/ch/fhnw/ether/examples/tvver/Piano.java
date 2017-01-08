@@ -57,6 +57,26 @@ public class Piano {
         return new PianoNote(0);
     }
 
+    public PianoNote findPianoNoteByKeyNumber(int keyNumber) {
+        for(PianoNote note : notes) {
+            if(note.getKeyNumber() == keyNumber) {
+                return note;
+            }
+        }
+
+        return new PianoNote(0);
+    }
+
+    public PianoNote findPianoNoteByScientificName(String scientificName) {
+        for(PianoNote note : notes) {
+            if(note.getScientificName().equals(scientificName)) {
+                return note;
+            }
+        }
+
+        return new PianoNote(0);
+    }
+
     public static double averageFrequency(double leftFrequency, double rightFrequency) {
         return (leftFrequency + rightFrequency) / 2;
     }

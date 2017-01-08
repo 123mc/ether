@@ -28,6 +28,16 @@ public class PianoNote {
         );
     }
 
+
+    /* freakkin getters */
+
+    public int    getKeyNumber()      { return KEY_NUMBER; }
+    public double getLowBorder()      { return LOW_BORDER; }
+    public double getHighBorder()     { return HIGH_BORDER; }
+    public double getFrequency()      { return FREQUENCY; }
+    public String getScientificName() { return SCIENTIFIC_NAME; }
+
+
     public boolean includesFrequency(double frequency) {
         return frequency >= LOW_BORDER && frequency <= HIGH_BORDER;
     }
