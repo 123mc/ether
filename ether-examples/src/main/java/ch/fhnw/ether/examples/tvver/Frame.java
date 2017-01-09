@@ -31,4 +31,16 @@ public class Frame {
     return audioFrame.getMonoSamples().length;
   }
 
+  public float getPeak() {
+    float peak = 0f;
+
+    for(float sample : audioFrame.getMonoSamples()) {
+      if(Math.abs(sample) > peak) {
+        peak = Math.abs(sample);
+      }
+    }
+
+    return peak;
+  }
+
 }

@@ -30,7 +30,7 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 	FFT fft;
 	BandsFFT bandsFft;
 
-	OnsetDetector onsetDetector = new OnsetDetector(10);
+	OnsetDetector onsetDetector = new OnsetDetector();
 
 
 	public MadSchPCM2MIDI(File track) throws UnsupportedAudioFileException, IOException, MidiUnavailableException, InvalidMidiDataException, RenderCommandException {
@@ -39,7 +39,7 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 	@Override
 	protected void initializePipeline(RenderProgram<IAudioRenderTarget> program) {
-		program.addLast(new AutoGain());
+		// program.addLast(new AutoGain());
 		program.addLast(new DCRemove());
 		program.addLast(new PCM2MIDI());
 
@@ -84,7 +84,7 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 				if(onsetDetector.onsetIsDetected()) {
 					System.out.println("////////ONSET DETECTED");
-					noteOn(63, 64);
+					noteOn(64, 64);
 				} else {
 					System.out.println(onsetDetector.status());
 				}
@@ -108,19 +108,6 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 //			} catch(Throwable t) {
 //				throw new RenderCommandException(t);
 //			}
-
-		/* desperate attempt doing something with the target frame*/
-		public float highestEnergyInFrame(AudioFrame frame) {
-			float[] samples = frame.getMonoSamples();
-			float peak = 0f;
-			for(float sample : samples) {
-				if(Math.abs(sample) > peak) {
-					peak = sample;
-				}
-			}
-
-			return peak;
-		}
 
 	}
 

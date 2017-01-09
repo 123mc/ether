@@ -32,9 +32,9 @@ public class OnsetDetector {
   *
   * */
 
-  private static float AVERAGE_DIFFERENCE_THRESHOLD                         = 0.05f;
+  private static float AVERAGE_DIFFERENCE_THRESHOLD                         = 0.002f;
   private static int   FRAME_QUEUE_CAPACITY                                 = 5;
-  private static int   DECAY_PHASE_CYCLES = 25;
+  private static int   DECAY_PHASE_CYCLES = 250;
   private static int   DETECTION_PHASE_CYCLES = 5;
   private static int   MINIMUM_THRESHOLDS_TO_EXCEED_WITHIN_DETECTION_PHASE  = 3;
 
