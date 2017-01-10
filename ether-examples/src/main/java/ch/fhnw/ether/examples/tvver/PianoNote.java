@@ -13,12 +13,12 @@ public class PianoNote {
     public PianoNote(int index) {
         INDEX       = index;
         KEY_NUMBER  = Piano.BASE_KEY + INDEX;
-        OCTAVE      = KEY_NUMBER / Piano.NOTES_IN_OCTAVE;
+        OCTAVE      = (KEY_NUMBER + 8) / Piano.NOTES_IN_OCTAVE;
         FREQUENCY   = Piano.calculateFrequency(INDEX);
         LOW_BORDER  = caclulateBorderToNote(-1);
         HIGH_BORDER = caclulateBorderToNote(1);
 
-        int mod     = (KEY_NUMBER % Piano.NOTES_IN_OCTAVE);
+        int mod     = ((KEY_NUMBER - 1) % Piano.NOTES_IN_OCTAVE);
         SCIENTIFIC_NAME = Piano.LETTER_MAP.get(mod) + OCTAVE;
     }
 
