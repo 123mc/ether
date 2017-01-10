@@ -31,6 +31,7 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 	BandsFFT bandsFft;
 
 	OnsetDetector onsetDetector = new OnsetDetector();
+	PianoNote testNote = piano.findPianoNoteByScientificName("C5");
 
 
 	public MadSchPCM2MIDI(File track) throws UnsupportedAudioFileException, IOException, MidiUnavailableException, InvalidMidiDataException, RenderCommandException {
@@ -84,7 +85,8 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 				if(onsetDetector.onsetIsDetected()) {
 					System.out.println("////////ONSET DETECTED");
-					noteOn(64, 64);
+					System.out.println("Note: " + testNote.getKeyNumber() + testNote.toString());
+					noteOn(testNote.getKeyNumber(), 64);
 				} else {
 					System.out.println(onsetDetector.status());
 				}
