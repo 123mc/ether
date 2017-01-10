@@ -135,7 +135,8 @@ public final class PCM2MIDIShell {
 				});
 			}
 		};
-		new PlotWindow(program);
+		if(!(getFlag(Flags.MAX_SPEED)))
+			new PlotWindow(program);
 
 		audioOut = impl.getFlag(Flags.MAX_SPEED) ? new NullAudioTarget(1, 44100) : new JavaSoundTarget(pcmOut);
 		audioOut.useProgram(program);
