@@ -4,6 +4,8 @@ public class PianoNote {
 
     private final int    INDEX;
     private final int    KEY_NUMBER;
+    private final int    MIDI_NUMBER;
+    private static final int MIDI_NUMBER_OFFSET = 20;
     private final int    OCTAVE;
     private final double FREQUENCY;
     private final double LOW_BORDER;
@@ -13,6 +15,7 @@ public class PianoNote {
     public PianoNote(int index) {
         INDEX       = index;
         KEY_NUMBER  = Piano.BASE_KEY + INDEX;
+        MIDI_NUMBER = KEY_NUMBER + MIDI_NUMBER_OFFSET;
         OCTAVE      = (KEY_NUMBER + 8) / Piano.NOTES_IN_OCTAVE;
         FREQUENCY   = Piano.calculateFrequency(INDEX);
         LOW_BORDER  = caclulateBorderToNote(-1);
@@ -32,6 +35,7 @@ public class PianoNote {
     /* freakkin getters */
 
     public int    getKeyNumber()      { return KEY_NUMBER; }
+    public int    getMidiNumber()      { return MIDI_NUMBER; }
     public double getLowBorder()      { return LOW_BORDER; }
     public double getHighBorder()     { return HIGH_BORDER; }
     public double getFrequency()      { return FREQUENCY; }

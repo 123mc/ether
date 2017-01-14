@@ -85,8 +85,8 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 				if(onsetDetector.onsetIsDetected()) {
 					System.out.println("////////ONSET DETECTED");
-					System.out.println("Note: " + testNote.getKeyNumber() + testNote.toString());
-					noteOn(testNote.getKeyNumber(), 64);
+					System.out.println("Note: " + testNote.getMidiNumber() + testNote.toString());
+					noteOn(testNote.getMidiNumber(), 64);
 				} else {
 					System.out.println(onsetDetector.status());
 				}
