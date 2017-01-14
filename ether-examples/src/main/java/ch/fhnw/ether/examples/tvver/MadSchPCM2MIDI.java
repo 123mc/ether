@@ -1,9 +1,6 @@
 package ch.fhnw.ether.examples.tvver;
 
-import ch.fhnw.ether.audio.AudioFrame;
-import ch.fhnw.ether.audio.AudioUtilities;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
-import ch.fhnw.ether.audio.fx.AutoGain;
 import ch.fhnw.ether.audio.fx.BandsFFT;
 import ch.fhnw.ether.audio.fx.DCRemove;
 import ch.fhnw.ether.audio.fx.FFT;
@@ -30,7 +27,7 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 	FFT fft;
 	BandsFFT bandsFft;
 
-	OnsetDetector onsetDetector = new OnsetDetector();
+	SignalAnalyzer signalAnalyzer = new SignalAnalyzer();
 	PianoNote testNote = piano.findPianoNoteByScientificName("C5");
 
 
@@ -81,14 +78,15 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 		protected void run(IAudioRenderTarget target) throws RenderCommandException {
 			try {
 
-				onsetDetector.feedFrame(target.getFrame());
+				signalAnalyzer.feedFrame(target.getFrame());
 
-				if(onsetDetector.onsetIsDetected()) {
+				if(signalAnalyzer.pianoNoteDetected()) {
+					PianoNote detectedPianoNote = signalAnalyzer.getLastPianoEvent().getPianoNote();
 					System.out.println("////////ONSET DETECTED");
-					System.out.println("Note: " + testNote.getMidiNumber() + testNote.toString());
-					noteOn(testNote.getMidiNumber(), 64);
+					System.out.println("Note: " + detectedPianoNote.getMidiNumber() + detectedPianoNote.toString());
+					noteOn(detectedPianoNote.getMidiNumber(), detectedPianoNote.getVelocity());
 				} else {
-					System.out.println(onsetDetector.status());
+
 				}
 
 			} catch (Throwable t) {

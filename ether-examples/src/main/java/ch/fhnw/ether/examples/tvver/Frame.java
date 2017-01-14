@@ -14,25 +14,25 @@ public class Frame {
 
   public float getAbsoluteAverage() {
 
-    if(length() < 1) {
-      return 0f;
-    }
-
     float sum = 0f;
+
+    if(audioFrameIsEmpty()) {
+      return sum;
+    }
 
     for(float sample : audioFrame.getMonoSamples()) {
       sum += sample;
     }
 
-    return sum / length();
+    return Math.abs(sum) / audioFrame.getMonoSamples().length;
   }
 
-  public int length() {
-    return audioFrame.getMonoSamples().length;
-  }
-
-  public float getPeak() {
+  public float getAbsolutePeak() {
     float peak = 0f;
+
+    if(audioFrameIsEmpty()) {
+      return peak;
+    }
 
     for(float sample : audioFrame.getMonoSamples()) {
       if(Math.abs(sample) > peak) {
@@ -41,6 +41,14 @@ public class Frame {
     }
 
     return peak;
+  }
+
+  public long getSTime() {
+    return audioFrame.sTime;
+  }
+
+  public boolean audioFrameIsEmpty() {
+    return audioFrame.samples == null;
   }
 
 }

@@ -12,6 +12,8 @@ public class PianoNote {
     private final double HIGH_BORDER;
     private final String SCIENTIFIC_NAME;
 
+    private int velocity = 64;
+
     public PianoNote(int index) {
         INDEX       = index;
         KEY_NUMBER  = Piano.BASE_KEY + INDEX;
@@ -53,6 +55,10 @@ public class PianoNote {
         double result = (border + borderIncrementIfLower);
 
         return Math.round(result * Math.pow(10, Piano.FREQUENCY_ACCURACY)) / ((double) (Math.pow(10, Piano.FREQUENCY_ACCURACY)));
+    }
+
+    public int getVelocity() {
+        return velocity;
     }
 
 }
