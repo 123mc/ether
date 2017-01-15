@@ -9,6 +9,7 @@ public class PianoEvent {
   private int timeToLive; // number of frames
   private PianoNote pianoNote;
   private static final PianoNote DEFAULT_PIANO_NOTE = new Piano().findPianoNoteByScientificName("C5");
+  private static final int FRAMES_TO_SKIP = 20;
 
   ArrayList<Frame> frames;
 
@@ -23,6 +24,19 @@ public class PianoEvent {
   public void feedFrame(Frame frame) {
     frames.add(frame);
     timeToLive--;
+    if(frames.size()==50){
+        PitchDetector pitchDetector = new PitchDetector(subSet(FRAMES_TO_SKIP,frames.size()-1));
+        pitchDetector.call();
+    }
+  }
+
+  private Frame[] subSet(int from, int to){
+    Frame[] result = new Frame[to-from];
+    for (int i = from; i < to; i++) {
+      result[i-from] = frames.get(i);
+    }
+
+    return result;
   }
 
   public boolean isAlive() {
@@ -30,8 +44,11 @@ public class PianoEvent {
   }
 
   public boolean isNew() {
+
     // TODO: return ONCE true as soon as Pitch was detected or timeToLive == 1 (pitch detection failed)
-    return (EXPECTED_TIME_TO_LIVE == timeToLive);
+    //return (EXPECTED_TIME_TO_LIVE == timeToLive);
+
+    return frames.size()==51;
   }
 
   public PianoNote getPianoNote() {

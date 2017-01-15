@@ -81,4 +81,13 @@ public class Piano {
         return (leftFrequency + rightFrequency) / 2;
     }
 
+    public float[] getAllFrequencies(){
+        float result[] = new float[notes.size()];
+        for (int i = 0; i < notes.size(); i++) {
+            result[i] = (float) notes.get(i).getFrequency();
+        }
+
+        return result;
+    }
+
 }
