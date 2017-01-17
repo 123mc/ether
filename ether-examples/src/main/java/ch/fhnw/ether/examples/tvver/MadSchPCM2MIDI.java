@@ -1,5 +1,6 @@
 package ch.fhnw.ether.examples.tvver;
 
+import ch.fhnw.ether.audio.AudioUtilities;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.audio.fx.BandsFFT;
 import ch.fhnw.ether.audio.fx.DCRemove;
@@ -24,12 +25,10 @@ import java.util.List;
 public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 	Piano piano = new Piano();
-	FFT fft;
 	BandsFFT bandsFft;
 
 	SignalAnalyzer signalAnalyzer = new SignalAnalyzer();
 	PianoNote testNote = piano.findPianoNoteByScientificName("C5");
-
 
 	public MadSchPCM2MIDI(File track) throws UnsupportedAudioFileException, IOException, MidiUnavailableException, InvalidMidiDataException, RenderCommandException {
 		super(track, EnumSet.of(Flags.REPORT, Flags.WAVE));
@@ -40,7 +39,9 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 		// program.addLast(new AutoGain());
 		program.addLast(new DCRemove());
 		program.addLast(new PCM2MIDI());
-
+		// FFT fft = new FFT(40, AudioUtilities.Window.HANN);
+		// program.addLast(fft);
+		// fft.addLast(new PCM2MIDIFFT(fft));
 	}
 
 	private static final Parameter P = new Parameter("p", "Probability", 0, 1, 1);
@@ -111,4 +112,7 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 	}
 
+	// public class PCM2MIDIFFT extends AbstractRenderCommand<IAudioRenderTarget> {
+ 			// TODO implement FFT stuff here
+	// }
 }
