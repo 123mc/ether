@@ -27,7 +27,7 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 	Piano piano = new Piano();
 	BandsFFT bandsFft;
 
-	SignalAnalyzer signalAnalyzer = new SignalAnalyzer();
+
 	PianoNote testNote = piano.findPianoNoteByScientificName("C5");
 
 	public MadSchPCM2MIDI(File track) throws UnsupportedAudioFileException, IOException, MidiUnavailableException, InvalidMidiDataException, RenderCommandException {
@@ -38,79 +38,13 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 	protected void initializePipeline(RenderProgram<IAudioRenderTarget> program) {
 		// program.addLast(new AutoGain());
 		program.addLast(new DCRemove());
-		program.addLast(new PCM2MIDI());
+		program.addLast(new AttackDetectionPipe(this));
 		// FFT fft = new FFT(40, AudioUtilities.Window.HANN);
 		// program.addLast(fft);
-		// fft.addLast(new PCM2MIDIFFT(fft));
+		// fft.addLast(new PCM2MIDIFFT(fft, this));
 	}
 
-	private static final Parameter P = new Parameter("p", "Probability", 0, 1, 1);
-
-	public class PCM2MIDI extends AbstractRenderCommand<IAudioRenderTarget> {
-		private final List<List<MidiEvent>> midiRef = new ArrayList<>();
-		private       int                   msTime;
-
-		public PCM2MIDI() {
-			super(P);
-		}
-
-		@Override
-		protected void init(IAudioRenderTarget target) throws RenderCommandException {
-			super.init(target);
-			midiRef.clear();
-			for(MidiEvent e : getRefMidi()) {
-				MidiMessage msg = e.getMessage();
-				if(msg instanceof ShortMessage && 
-						(msg.getMessage()[0] & 0xFF) != ShortMessage.NOTE_ON || 
-						(msg.getMessage()[2] & 0xFF) == 0) continue;
-				int msTime = (int) (e.getTick() / 1000L);
-				while(midiRef.size() <= msTime)
-					midiRef.add(null);
-				List<MidiEvent> evts = midiRef.get(msTime);
-				if(evts == null) {
-					evts = new ArrayList<MidiEvent>();
-					midiRef.set(msTime, evts);
-				}
-				evts.add(e);
-			}
-		}
-
-		@Override
-		protected void run(IAudioRenderTarget target) throws RenderCommandException {
-			try {
-
-				signalAnalyzer.feedFrame(target.getFrame());
-
-				if(signalAnalyzer.pianoNoteDetected()) {
-					PianoNote detectedPianoNote = signalAnalyzer.getLastPianoEvent().getPianoNote();
-					System.out.println("////////ONSET DETECTED");
-					System.out.println("Note: " + detectedPianoNote.getMidiNumber() + detectedPianoNote.toString());
-					noteOn(detectedPianoNote.getMidiNumber(), detectedPianoNote.getVelocity());
-				} else {
-
-				}
-
-			} catch (Throwable t) {
-				throw new RenderCommandException(t);
-			}
-		}
-//			try {
-//				int msTimeLimit = (int) (target.getFrame().playOutTime * IScheduler.SEC2MS);
-//				for(;msTime <= msTimeLimit; msTime++) {
-//					if(msTime < midiRef.size()) {
-//						List<MidiEvent> evts = midiRef.get(msTime);
-//						if(evts != null) {
-//							if(Math.random() <= getVal(P))
-//								for(MidiEvent e : evts)
-//									noteOn(e.getMessage().getMessage()[1], e.getMessage().getMessage()[2]);
-//						}
-//					}
-//				}
-//			} catch(Throwable t) {
-//				throw new RenderCommandException(t);
-//			}
-
-	}
+	// private static final Parameter P = new Parameter("p", "Probability", 0, 1, 1);
 
 	// public class PCM2MIDIFFT extends AbstractRenderCommand<IAudioRenderTarget> {
  			// TODO implement FFT stuff here
