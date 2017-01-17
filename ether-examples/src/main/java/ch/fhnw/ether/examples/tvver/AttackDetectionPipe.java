@@ -22,6 +22,7 @@ public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarge
 
     @Override
     protected void run(IAudioRenderTarget target) throws RenderCommandException {
+        System.out.println("*running "+this.getClass().getName());
         try {
 
             signalAnalyzer.feedFrame(target.getFrame());
