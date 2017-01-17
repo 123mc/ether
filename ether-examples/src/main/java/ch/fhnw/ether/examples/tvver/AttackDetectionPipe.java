@@ -5,21 +5,15 @@ import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.RenderCommandException;
 
 import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.ShortMessage;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget> {
-    private final List<List<MidiEvent>> midiRef = new ArrayList<>();
-    private       int                   msTime;
 
-    SignalAnalyzer signalAnalyzer = new SignalAnalyzer();
+    SignalAnalyzer signalAnalyzer;
 
-    AbstractPCM2MIDI madSchPcm2Midi;
-
-    public AttackDetectionPipe(AbstractPCM2MIDI pcm2mid) {
-        madSchPcm2Midi = pcm2mid;
+    public AttackDetectionPipe(SignalAnalyzer sa) {
+        signalAnalyzer = sa;
     }
 
     @Override
@@ -37,7 +31,7 @@ public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarge
                 PianoNote detectedPianoNote = signalAnalyzer.getLastPianoEvent().getPianoNote();
                 System.out.println("////////ONSET DETECTED");
                 System.out.println("Note: " + detectedPianoNote.getMidiNumber() + detectedPianoNote.toString());
-                madSchPcm2Midi.noteOn(detectedPianoNote.getMidiNumber(), detectedPianoNote.getVelocity());
+                signalAnalyzer.noteOn(detectedPianoNote.getMidiNumber());
             } else {
 
             }

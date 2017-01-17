@@ -17,11 +17,18 @@ public class SignalAnalyzer {
 
   private PianoEvents pianoEvents;
 
-  public SignalAnalyzer() {
+  MadSchPCM2MIDI madSchPcm2Midi;
+
+  public SignalAnalyzer(MadSchPCM2MIDI pcm2midi) {
+    madSchPcm2Midi = pcm2midi;
     pianoEvents = new PianoEvents();
     frameBuffer = new FrameBuffer(FRAME_BUFFER_SIZE);
     silenceDetector = new SilenceDetector(SILENCE_THRESHOLD);
     attackDetector = new AttackDetector(ATTACK_DIFFERENCE_THRESHOLD, ATTACK_ENERGY_THRESHOLD);
+  }
+
+  public void noteOn(int midiNumber) {
+    madSchPcm2Midi.noteOn(midiNumber, 64);
   }
 
   public void feedFrame(AudioFrame audioFrame) {
