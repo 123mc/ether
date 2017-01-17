@@ -210,6 +210,12 @@ public final class PCM2MIDIShell {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Throwable {
 		/*
+
+			OS X: add "-XstartOnFirstThread" to the VM, otherwise you will get:
+
+				***WARNING: Display must be created on main thread due to Cocoa restrictions.
+				Exception in thread "main" org.eclipse.swt.SWTException: Invalid thread access
+
 			How to call main():
 
 			Argument 1: Relative file path to .mid file in ./resources/
