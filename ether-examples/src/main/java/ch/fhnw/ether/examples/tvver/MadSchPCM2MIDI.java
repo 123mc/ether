@@ -26,22 +26,25 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 	Piano piano = new Piano();
 	BandsFFT bandsFft;
-
+	Boolean attackDetected;
 
 	PianoNote testNote = piano.findPianoNoteByScientificName("C5");
 
 	public MadSchPCM2MIDI(File track) throws UnsupportedAudioFileException, IOException, MidiUnavailableException, InvalidMidiDataException, RenderCommandException {
 		super(track, EnumSet.of(Flags.REPORT, Flags.WAVE));
+		attackDetected = false;
 	}
 
 	@Override
 	protected void initializePipeline(RenderProgram<IAudioRenderTarget> program) {
-		// program.addLast(new AutoGain());
+
 		program.addLast(new DCRemove());
 		program.addLast(new AttackDetectionPipe(this));
-		// FFT fft = new FFT(40, AudioUtilities.Window.HANN);
-		// program.addLast(fft);
-		// fft.addLast(new PCM2MIDIFFT(fft, this));
+
+		FFT fft = new FFT(40, AudioUtilities.Window.HANN);
+		fft.addLast(new PitchDetectionPipe(fft, this));
+		program.addLast(fft);
+
 	}
 
 	// private static final Parameter P = new Parameter("p", "Probability", 0, 1, 1);
