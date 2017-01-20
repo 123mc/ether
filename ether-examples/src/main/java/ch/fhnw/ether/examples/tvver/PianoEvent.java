@@ -2,16 +2,16 @@ package ch.fhnw.ether.examples.tvver;
 
 import ch.fhnw.ether.audio.IAudioRenderTarget;
 
-import java.util.ArrayList;
-
 public class PianoEvent {
 
   private volatile PianoNote pianoNote;
-  private final IAudioRenderTarget targetWhereAttackWasDetected;
 
-  public PianoEvent(IAudioRenderTarget target, IAudioRenderTarget targetOfLastSilence) {
-    targetWhereAttackWasDetected = target;
-    targetOfLastSilence = targetOfLastSilence; // could be used for the onset (= last silent part before the attack)
+  private final double playOutTimeOfAttack;
+  private final double playOutTimeOfLastSilence;
+
+  public PianoEvent(double attack, double lastSilence) {
+    playOutTimeOfAttack = attack;
+    playOutTimeOfLastSilence = lastSilence;
   }
 
   public boolean isDetected() {
@@ -32,5 +32,14 @@ public class PianoEvent {
 
     pianoNote = pn;
   }
+
+  public double getPlayOutTimeOfAttack() {
+    return playOutTimeOfAttack;
+  }
+
+  public double getPlayOutTimeOfLastSilence() {
+    return playOutTimeOfLastSilence;
+  }
+
 
 }

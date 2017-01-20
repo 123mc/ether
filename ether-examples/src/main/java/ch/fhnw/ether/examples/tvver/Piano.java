@@ -16,7 +16,7 @@ public class Piano {
     public static final double       ROUNDING_INCREMENT      = (1 / (Math.pow(10, FREQUENCY_ACCURACY)));
     public static final List<String> LETTER_MAP              = asList("A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#");
 
-    private List<PianoNote> notes;
+    private List<PianoNote> pianoNotes;
 
     public Piano() {
         createNotes();
@@ -24,15 +24,15 @@ public class Piano {
 
     public String toString() {
         String string = new String();
-        for(PianoNote note : notes) {
+        for(PianoNote note : pianoNotes) {
             string += note.toString();
         }
         return string;
     }
     private void createNotes() {
-        notes = new ArrayList<>();
+        pianoNotes = new ArrayList<>();
         for(int i = LOWEST_KEY; i <= HIGHEST_KEY; i++) {
-            notes.add(new PianoNote(i));
+            pianoNotes.add(new PianoNote(i));
         }
     }
 
@@ -48,7 +48,7 @@ public class Piano {
     }
 
     public PianoNote findPianoNoteByFrequency(double frequency) {
-        for(PianoNote note : notes) {
+        for(PianoNote note : pianoNotes) {
             if(note.includesFrequency(frequency)) {
                 return note;
             }
@@ -58,7 +58,7 @@ public class Piano {
     }
 
     public PianoNote findPianoNoteByKeyNumber(int keyNumber) {
-        for(PianoNote note : notes) {
+        for(PianoNote note : pianoNotes) {
             if(note.getKeyNumber() == keyNumber) {
                 return note;
             }
@@ -68,7 +68,7 @@ public class Piano {
     }
 
     public PianoNote findPianoNoteByScientificName(String scientificName) {
-        for(PianoNote note : notes) {
+        for(PianoNote note : pianoNotes) {
             if(note.getScientificName().equals(scientificName)) {
                 return note;
             }
@@ -82,12 +82,16 @@ public class Piano {
     }
 
     public float[] getAllFrequencies(){
-        float result[] = new float[notes.size()];
-        for (int i = 0; i < notes.size(); i++) {
-            result[i] = (float) notes.get(i).getFrequency();
+        float result[] = new float[pianoNotes.size()];
+        for (int i = 0; i < pianoNotes.size(); i++) {
+            result[i] = (float) pianoNotes.get(i).getFrequency();
         }
 
         return result;
+    }
+
+    public List<PianoNote> getPianoNotes() {
+        return pianoNotes;
     }
 
 }

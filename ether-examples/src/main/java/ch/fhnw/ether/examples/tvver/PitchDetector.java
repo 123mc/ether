@@ -1,21 +1,26 @@
 package ch.fhnw.ether.examples.tvver;
 
-
-import ch.fhnw.ether.audio.AudioUtilities;
 import ch.fhnw.ether.audio.IAudioRenderTarget;
-import ch.fhnw.ether.audio.fx.BandsFFT;
 import ch.fhnw.ether.audio.fx.FFT;
+
+import java.util.List;
 
 public class PitchDetector {
 
     private final FFT fft;
     private final Piano piano = new Piano();
+    private final int PITCH_DETECTION_DELAY_MS;
 
-    public PitchDetector(FFT fastFourierTransform){
+    public PitchDetector(FFT fastFourierTransform, int pitchDetectionDelayMs) {
         fft = fastFourierTransform;
+        PITCH_DETECTION_DELAY_MS = pitchDetectionDelayMs;
+        System.out.println("PitchDetector: (PITCH_DETECTION_DELAY_MS: " + PITCH_DETECTION_DELAY_MS + ")");
     }
     
-    public PianoNote analyze(IAudioRenderTarget target) {
+    public PianoNote analyze(IAudioRenderTarget target, PianoEvent pianoEvent) {
+
+        System.out.println("ready to be detected!");
+
         // TODO
 //        System.out.println("*running "+this.getClass().getName());
 //        System.out.println("--20-100 " + fft.power(20.0f,100.0f));
@@ -29,8 +34,37 @@ public class PitchDetector {
 //            fft.power(freqs[j],freqs[j+1]);
 //        }
 
-        return piano.findPianoNoteByScientificName("C5"); // REMOVE ME
+        /* check every frequency band of each note */
+        float maxPower = 0.0f;
+        PianoNote pianoNoteWithMaxPower = new PianoNote(0);
+        List<PianoNote> pianoNotes = piano.getPianoNotes();
 
+        for(int i = 0; i < pianoNotes.size(); i++) {
+            PianoNote thisPianoNote = pianoNotes.get(i);
+            float fLow  = (float) thisPianoNote.getLowBorder();
+            float fHigh = (float) thisPianoNote.getHighBorder();
+
+            float power = fft.power(fLow,fHigh);
+
+            if(power > maxPower) {
+                pianoNoteWithMaxPower = thisPianoNote;
+                maxPower = power;
+            }
+
+
+            // System.out.println("--"+ fLow + "- " + fHigh + " -> "+  + " ... " + thisPianoNote.toString());
+        }
+
+        System.out.println("detected piano note ... : " + pianoNoteWithMaxPower.toString());
+        return pianoNoteWithMaxPower;
+    }
+
+    public boolean pianoEventIsReadyToBePitchDetected(IAudioRenderTarget target, PianoEvent pianoEvent) {
+        return (target.getFrame().playOutTime - getDelayInSeconds() > pianoEvent.getPlayOutTimeOfLastSilence());
+    }
+
+    private float getDelayInSeconds() {
+        return PITCH_DETECTION_DELAY_MS / 1000;
     }
 
 }

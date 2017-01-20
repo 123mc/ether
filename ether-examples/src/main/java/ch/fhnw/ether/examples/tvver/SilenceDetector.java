@@ -6,6 +6,8 @@ public class SilenceDetector {
 
   private final float SILENCE_THRESHOLD;
 
+
+
   FrameBuffer frameBuffer;
 
 
@@ -16,14 +18,16 @@ public class SilenceDetector {
     System.out.println("SilenceDetector: (SILENCE_THRESHOLD: " + silenceThreshold + ", bufferSize: " + bufferSize + ")");
   }
 
-  public IAudioRenderTarget analyze(IAudioRenderTarget target) {
+  public double analyze(IAudioRenderTarget target) {
     frameBuffer.add(target.getFrame());
 
-    if(averageOfBufferedFrames() < SILENCE_THRESHOLD) {
-      return target;
+    float averageOfFrames = averageOfBufferedFrames();
+
+    if(averageOfFrames < SILENCE_THRESHOLD) {
+      return target.getFrame().playOutTime;
     }
 
-    return null;
+    return -1.0d;
   }
 
   private float averageOfBufferedFrames() {

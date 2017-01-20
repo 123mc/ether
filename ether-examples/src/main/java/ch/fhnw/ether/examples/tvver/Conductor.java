@@ -5,21 +5,26 @@ import ch.fhnw.ether.audio.IAudioRenderTarget;
 public class Conductor {
 
   /* ATTACK DETECTOR PARAMETERS */
-  public static final float ATTACK_DIFFERENCE_THRESHOLD = 0.003f;
-  public static final float ATTACK_ENERGY_THRESHOLD = 0.05f;
+  public static final float ATTACK_DIFFERENCE_THRESHOLD = 0.002f;
+  public static final float ATTACK_ENERGY_THRESHOLD = 0.025f;
+  public static final int   ATTACK_SUSPENSION_MS = 300;
 
   /* SILENCE DETECTOR PARAMETERS */
   public static final float SILENCE_THRESHOLD = 0.0001f;
   public static final int   SILENCE_BUFFER_SIZE = 5;
 
+  /* PITCH DETECTOR PARAMTERS */
+  public static final int PITCH_DETECTION_DELAY_MS = 80;
+
   private final PianoEvents pianoEvents;
-  private volatile IAudioRenderTarget targetOfLastSilence;
+  private volatile double playOutTimeOfLastSilence;
+
   MadSchPCM2MIDI madSchPcm2Midi;
 
   public Conductor(MadSchPCM2MIDI pcm2midi) {
     madSchPcm2Midi = pcm2midi;
     pianoEvents = new PianoEvents();
-    targetOfLastSilence = null;
+    playOutTimeOfLastSilence = 0.0d;
   }
 
   public void noteOn(int midiNumber) {
@@ -27,19 +32,15 @@ public class Conductor {
   }
 
   public void setAttackDetected(IAudioRenderTarget target) {
-    if(target != null) {
-      pianoEvents.add(new PianoEvent(target, targetOfLastSilence));
-    }
+      pianoEvents.add(new PianoEvent(target.getFrame().playOutTime, playOutTimeOfLastSilence));
   }
 
   public PianoEvents getUndetectedPianoEvents() {
     return pianoEvents.getUndetectedPianoEvents();
   }
 
-  public void setLastSilence(IAudioRenderTarget target) {
-    if(target != null) {
-      targetOfLastSilence = target;
-    }
+  public void setLastSilence(double playOutTime) {
+      playOutTimeOfLastSilence = playOutTime;
   }
 
 }

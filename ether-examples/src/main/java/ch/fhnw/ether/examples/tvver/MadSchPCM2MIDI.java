@@ -37,12 +37,6 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 		FFT fft = new FFT(40, AudioUtilities.Window.HANN);
 		fft.addLast(new PitchDetectionPipe(fft, conductor));
 		program.addLast(fft);
-
 	}
 
-	// private static final Parameter P = new Parameter("p", "Probability", 0, 1, 1);
-
-	// public class PCM2MIDIFFT extends AbstractRenderCommand<IAudioRenderTarget> {
- 			// TODO implement FFT stuff here
-	// }
 }

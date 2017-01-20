@@ -6,27 +6,35 @@ public class AttackDetector {
 
   private final float ATTACK_DIFFERENCE_THRESHOLD;
   private final float ATTACK_ENERGY_THRESHOLD;
+  private final float ATTACK_SUSPENSION_MS;
 
   private final FrameBuffer frameBuffer;
   private static final int ATTACK_DETECTOR_FRAME_BUFFER_SIZE = 2;
 
-  public AttackDetector(float attackDifferenceThreshold, float attackEnergyThreshold) {
+  private volatile double suspendedUntilPlayOutTime = 0.0f;
+
+  public AttackDetector(float attackDifferenceThreshold, float attackEnergyThreshold, int attackSuspensionMs) {
     ATTACK_DIFFERENCE_THRESHOLD = attackDifferenceThreshold;
     ATTACK_ENERGY_THRESHOLD = attackEnergyThreshold;
+    ATTACK_SUSPENSION_MS = attackSuspensionMs;
     frameBuffer = new FrameBuffer(ATTACK_DETECTOR_FRAME_BUFFER_SIZE);
 
-    System.out.println("AttackDetector: (ATTACK_DIFFERENCE_THRESHOLD: " + attackDifferenceThreshold + ", ATTACK_ENERGY_THRESHOLD: " +  attackEnergyThreshold + ")");
+    System.out.println("AttackDetector: (ATTACK_DIFFERENCE_THRESHOLD: " + attackDifferenceThreshold + ", ATTACK_ENERGY_THRESHOLD: " +  attackEnergyThreshold + ", ATTACK_SUSPENSION_MS: " + ATTACK_SUSPENSION_MS + ")");
   }
 
   public IAudioRenderTarget analyze(IAudioRenderTarget target) {
     frameBuffer.add(target.getFrame());
 
-    float difference = calculateDifference(frameBuffer.get(0), frameBuffer.get(1));
-    float highestPeak = maxHighestPeak(frameBuffer.get(0), frameBuffer.get(1));
+    if(!isSuspended()) {
+      float difference = calculateDifference(frameBuffer.get(0), frameBuffer.get(1));
+      float highestPeak = maxHighestPeak(frameBuffer.get(0), frameBuffer.get(1));
 
-    if(difference > ATTACK_DIFFERENCE_THRESHOLD && highestPeak > ATTACK_ENERGY_THRESHOLD) {
-      return target;
+      if(difference > ATTACK_DIFFERENCE_THRESHOLD && highestPeak > ATTACK_ENERGY_THRESHOLD) {
+        suspendedUntilPlayOutTime = target.getFrame().playOutTime + getAttackSuspensionInSeconds();
+        return target;
+      }
     }
+
     return null;
   }
 
@@ -39,6 +47,15 @@ public class AttackDetector {
       return firstFrame.getAbsolutePeak();
     }
     return secondFrame.getAbsolutePeak();
+  }
+
+  public boolean isSuspended() {
+    return suspendedUntilPlayOutTime > frameBuffer.getNewest().getPlayOutTime();
+  }
+
+
+  public double getAttackSuspensionInSeconds() {
+    return (ATTACK_SUSPENSION_MS / 1000);
   }
 
 }

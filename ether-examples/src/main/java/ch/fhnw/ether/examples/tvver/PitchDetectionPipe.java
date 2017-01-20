@@ -15,7 +15,7 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
     public PitchDetectionPipe(FFT fastfuriousTransform, Conductor c) {
         conductor = c;
         fft = fastfuriousTransform;
-        pitchDetector = new PitchDetector(fft);
+        pitchDetector = new PitchDetector(fft, conductor.PITCH_DETECTION_DELAY_MS);
     }
 
     @Override
@@ -28,9 +28,11 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
 
         for(int i = 0; i < undetectedPianoEvents.size(); i++) {
             PianoEvent pianoEvent = undetectedPianoEvents.get(i);
-            PianoNote pianoNote = pitchDetector.analyze(target);
-            pianoEvent.setPianoNote(pianoNote);
-            conductor.noteOn(pianoNote.getMidiNumber());
+            if(pitchDetector.pianoEventIsReadyToBePitchDetected(target, pianoEvent)) {
+                PianoNote pianoNote = pitchDetector.analyze(target, pianoEvent);
+                pianoEvent.setPianoNote(pianoNote);
+                conductor.noteOn(pianoNote.getMidiNumber());
+            }
         }
     }
 

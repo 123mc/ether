@@ -43,8 +43,8 @@ public class Frame {
     return peak;
   }
 
-  public long getSTime() {
-    return audioFrame.sTime;
+  public double getPlayOutTime() {
+    return audioFrame.playOutTime;
   }
 
   public boolean audioFrameIsEmpty() {

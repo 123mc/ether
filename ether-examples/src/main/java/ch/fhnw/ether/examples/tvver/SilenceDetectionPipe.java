@@ -8,7 +8,6 @@ public class SilenceDetectionPipe extends AbstractRenderCommand<IAudioRenderTarg
 
     private final Conductor conductor;
     private final SilenceDetector silenceDetector;
-    private IAudioRenderTarget targetOfLastSilence = null;
 
     public SilenceDetectionPipe(Conductor c) {
       conductor = c;
@@ -22,8 +21,10 @@ public class SilenceDetectionPipe extends AbstractRenderCommand<IAudioRenderTarg
     @Override
     protected void run(IAudioRenderTarget target) throws RenderCommandException {
       try {
-        targetOfLastSilence = silenceDetector.analyze(target); // returns null if no attack was detected
-        conductor.setLastSilence(targetOfLastSilence);
+        double playOutTimeOfLastSilence = silenceDetector.analyze(target); // returns negative value if no silence detected
+        if(playOutTimeOfLastSilence > 0.0d) {
+          conductor.setLastSilence(playOutTimeOfLastSilence);
+        }
       } catch (Throwable t) {
         throw new RenderCommandException(t);
       }

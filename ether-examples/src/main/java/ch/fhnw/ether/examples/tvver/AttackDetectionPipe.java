@@ -12,7 +12,7 @@ public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarge
 
     public AttackDetectionPipe(Conductor c) {
         conductor = c;
-        attackDetector = new AttackDetector(conductor.ATTACK_DIFFERENCE_THRESHOLD, conductor.ATTACK_ENERGY_THRESHOLD);
+        attackDetector = new AttackDetector(conductor.ATTACK_DIFFERENCE_THRESHOLD, conductor.ATTACK_ENERGY_THRESHOLD, conductor.ATTACK_SUSPENSION_MS);
     }
 
     @Override
@@ -23,7 +23,9 @@ public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarge
     protected void run(IAudioRenderTarget target) throws RenderCommandException {
         try {
             targetWhereAttackWasDetected = attackDetector.analyze(target); // returns null if no attack was detected
-            conductor.setAttackDetected(targetWhereAttackWasDetected);
+            if(targetWhereAttackWasDetected != null) {
+                conductor.setAttackDetected(targetWhereAttackWasDetected);
+            }
         } catch (Throwable t) {
             throw new RenderCommandException(t);
         }

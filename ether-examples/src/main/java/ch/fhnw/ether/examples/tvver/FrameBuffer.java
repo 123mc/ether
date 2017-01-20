@@ -38,9 +38,9 @@ public class FrameBuffer {
     return frames.length;
   }
 
-//  public Frame getLastFrame() {
-//    return getFrameByIndex(frames.length - 1);
-//  }
+  public Frame getNewest() {
+    return get(0);
+  }
 //
 //  public Frame[] getLastNFrames(int numberOfFrames) {
 //    Frame[] lastFrames = new Frame[numberOfFrames];
