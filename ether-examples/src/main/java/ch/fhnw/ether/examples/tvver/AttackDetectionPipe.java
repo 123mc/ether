@@ -4,16 +4,15 @@ import ch.fhnw.ether.audio.IAudioRenderTarget;
 import ch.fhnw.ether.media.AbstractRenderCommand;
 import ch.fhnw.ether.media.RenderCommandException;
 
-import javax.sound.midi.MidiEvent;
-import java.util.ArrayList;
-import java.util.List;
-
 public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget> {
 
-    SignalAnalyzer signalAnalyzer;
+    private final Conductor conductor;
+    private final AttackDetector attackDetector;
+    private IAudioRenderTarget targetWhereAttackWasDetected = null;
 
-    public AttackDetectionPipe(SignalAnalyzer sa) {
-        signalAnalyzer = sa;
+    public AttackDetectionPipe(Conductor c) {
+        conductor = c;
+        attackDetector = new AttackDetector(conductor.ATTACK_DIFFERENCE_THRESHOLD, conductor.ATTACK_ENERGY_THRESHOLD);
     }
 
     @Override
@@ -22,20 +21,9 @@ public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarge
 
     @Override
     protected void run(IAudioRenderTarget target) throws RenderCommandException {
-        System.out.println("*running "+this.getClass().getName());
         try {
-
-            signalAnalyzer.feedFrame(target.getFrame());
-
-            if(signalAnalyzer.pianoNoteDetected()) {
-                PianoNote detectedPianoNote = signalAnalyzer.getLastPianoEvent().getPianoNote();
-                System.out.println("////////ONSET DETECTED");
-                System.out.println("Note: " + detectedPianoNote.getMidiNumber() + detectedPianoNote.toString());
-                signalAnalyzer.noteOn(detectedPianoNote.getMidiNumber());
-            } else {
-
-            }
-
+            targetWhereAttackWasDetected = attackDetector.analyze(target); // returns null if no attack was detected
+            conductor.setAttackDetected(targetWhereAttackWasDetected);
         } catch (Throwable t) {
             throw new RenderCommandException(t);
         }

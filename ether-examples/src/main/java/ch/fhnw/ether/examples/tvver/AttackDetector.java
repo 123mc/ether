@@ -1,42 +1,37 @@
 package ch.fhnw.ether.examples.tvver;
 
+import ch.fhnw.ether.audio.IAudioRenderTarget;
+
 public class AttackDetector {
 
   private final float ATTACK_DIFFERENCE_THRESHOLD;
   private final float ATTACK_ENERGY_THRESHOLD;
 
-  private boolean attackDetected;
+  private final FrameBuffer frameBuffer;
+  private static final int ATTACK_DETECTOR_FRAME_BUFFER_SIZE = 2;
 
   public AttackDetector(float attackDifferenceThreshold, float attackEnergyThreshold) {
     ATTACK_DIFFERENCE_THRESHOLD = attackDifferenceThreshold;
     ATTACK_ENERGY_THRESHOLD = attackEnergyThreshold;
+    frameBuffer = new FrameBuffer(ATTACK_DETECTOR_FRAME_BUFFER_SIZE);
 
     System.out.println("AttackDetector: (ATTACK_DIFFERENCE_THRESHOLD: " + attackDifferenceThreshold + ", ATTACK_ENERGY_THRESHOLD: " +  attackEnergyThreshold + ")");
   }
 
-  public void analyze(Frame[] frames) {
-    attackDetected = false;
-    float difference = calculateDifference(frames[0], frames[1]);
-    float highestPeak = maxHighestPeak(frames[0], frames[1]);
+  public IAudioRenderTarget analyze(IAudioRenderTarget target) {
+    frameBuffer.add(target.getFrame());
+
+    float difference = calculateDifference(frameBuffer.get(0), frameBuffer.get(1));
+    float highestPeak = maxHighestPeak(frameBuffer.get(0), frameBuffer.get(1));
 
     if(difference > ATTACK_DIFFERENCE_THRESHOLD && highestPeak > ATTACK_ENERGY_THRESHOLD) {
-      attackDetected = true;
+      return target;
     }
-  }
-
-  public boolean attackIsDetected() {
-    return attackDetected;
+    return null;
   }
 
   private float calculateDifference(Frame thisFrame, Frame previousFrame) {
     return (thisFrame.getAbsoluteAverage() - previousFrame.getAbsoluteAverage());
-  }
-
-  private float calculateAveragePeak(Frame firstFrame, Frame secondFrame) {
-    if(firstFrame.getAbsoluteAverage() > secondFrame.getAbsoluteAverage()) {
-      return firstFrame.getAbsoluteAverage();
-    }
-    return secondFrame.getAbsoluteAverage();
   }
 
   private float maxHighestPeak(Frame firstFrame, Frame secondFrame) {

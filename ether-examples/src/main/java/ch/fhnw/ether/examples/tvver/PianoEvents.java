@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class PianoEvents {
   ArrayList<PianoEvent> pianoEvents;
+
   public PianoEvents() {
     pianoEvents = new ArrayList<>();
   }
@@ -14,12 +15,26 @@ public class PianoEvents {
 
   public PianoEvent getLast() {
     if(pianoEvents.size() < 1) {
-      return new PianoEvent(0, 0);
+      return null;
     }
     return pianoEvents.get(pianoEvents.size() - 1);
   }
 
-  public boolean newPianoNoteIsDetected() {
-    return getLast().isNew();
+  public int size() {
+    return pianoEvents.size();
+  }
+
+  public PianoEvent get(int index) {
+    return pianoEvents.get(index);
+  }
+
+  public PianoEvents getUndetectedPianoEvents() {
+    PianoEvents undetectedPianoEvents = new PianoEvents();
+    for(PianoEvent pianoEvent : pianoEvents) {
+      if(!pianoEvent.isDetected()) {
+        undetectedPianoEvents.add(pianoEvent);
+      }
+    }
+    return undetectedPianoEvents;
   }
 }
