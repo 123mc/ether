@@ -12,7 +12,7 @@ public class AttackDetectionPipe extends AbstractRenderCommand<IAudioRenderTarge
 
     public AttackDetectionPipe(Conductor c) {
         conductor = c;
-        attackDetector = new AttackDetector(conductor.ATTACK_DIFFERENCE_THRESHOLD, conductor.ATTACK_ENERGY_THRESHOLD, conductor.ATTACK_SUSPENSION_MS);
+        attackDetector = new AttackDetector(conductor.ATTACK_DIFFERENCE_THRESHOLD, conductor.ATTACK_ENERGY_THRESHOLD, conductor.ATTACK_SUSPENSION_MS, conductor.ATTACK_BUFFER_SIZE);
     }
 
     @Override

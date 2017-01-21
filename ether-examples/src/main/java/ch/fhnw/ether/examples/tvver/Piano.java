@@ -1,8 +1,10 @@
 package ch.fhnw.ether.examples.tvver;
 
+import ch.fhnw.ether.audio.fx.FFT;
+
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import static java.util.Arrays.asList;
 
 public class Piano {
@@ -16,10 +18,17 @@ public class Piano {
     public static final double       ROUNDING_INCREMENT      = (1 / (Math.pow(10, FREQUENCY_ACCURACY)));
     public static final List<String> LETTER_MAP              = asList("A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#");
 
-    private List<PianoNote> pianoNotes;
+    private double playOutTime = -1.0d;
+
+    private ArrayList<PianoNote> pianoNotes  = new ArrayList<>();
 
     public Piano() {
         createNotes();
+    }
+
+    public Piano(FFT fft, double time) {
+        playOutTime = time;
+        createNotesWithPower(fft);
     }
 
     public String toString() {
@@ -29,10 +38,37 @@ public class Piano {
         }
         return string;
     }
+
+    public String getHeaderRow() {
+        String headerRow = "";
+        for(PianoNote pianoNote : pianoNotes) {
+            headerRow += ";" + pianoNote.spectrumHeadersToString();
+        }
+
+        return headerRow;
+    }
+
+    public String getPowerRow() {
+        String powerRow = "";
+        for(PianoNote pianoNote : pianoNotes) {
+            powerRow += ";" + pianoNote.getSpectrumPower();
+        }
+
+        return powerRow;
+    }
+
+
     private void createNotes() {
-        pianoNotes = new ArrayList<>();
+        createNotesWithPower(null);
+    }
+
+    private void createNotesWithPower(FFT fft) {
         for(int i = LOWEST_KEY; i <= HIGHEST_KEY; i++) {
-            pianoNotes.add(new PianoNote(i));
+            PianoNote pianoNote = new PianoNote(i);
+            if(fft != null) {
+                pianoNote.setSpectrumPower(fft);
+            }
+            pianoNotes.add(pianoNote);
         }
     }
 
@@ -93,5 +129,29 @@ public class Piano {
     public List<PianoNote> getPianoNotes() {
         return pianoNotes;
     }
+
+    public PianoNote getPianoNoteWithHighestSpectrumPower() {
+        PianoNote pianoNoteWithHigestSpectrumPower = pianoNotes.get(0);
+        for(PianoNote pianoNote : pianoNotes) {
+            if(pianoNoteWithHigestSpectrumPower.getSpectrumPower() < pianoNote.getSpectrumPower()) {
+                pianoNoteWithHigestSpectrumPower = pianoNote;
+            }
+        }
+        return pianoNoteWithHigestSpectrumPower;
+    }
+
+    public float getAveragePowerInOctave(int octaveNumber) {
+        float powerSum = 0.0f;
+
+        if(playOutTime >  0.0d) {
+            for(String l : LETTER_MAP) {
+                powerSum += findPianoNoteByScientificName(l + octaveNumber).getSpectrumPower();
+            }
+        }
+
+        return powerSum / NOTES_IN_OCTAVE;
+    }
+
+
 
 }

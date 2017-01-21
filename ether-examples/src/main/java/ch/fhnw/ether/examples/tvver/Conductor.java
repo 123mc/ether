@@ -5,16 +5,18 @@ import ch.fhnw.ether.audio.IAudioRenderTarget;
 public class Conductor {
 
   /* ATTACK DETECTOR PARAMETERS */
-  public static final float ATTACK_DIFFERENCE_THRESHOLD = 0.002f;
-  public static final float ATTACK_ENERGY_THRESHOLD = 0.025f;
-  public static final int   ATTACK_SUSPENSION_MS = 300;
+  public static final float ATTACK_DIFFERENCE_THRESHOLD = 0.005f;
+  public static final float ATTACK_ENERGY_THRESHOLD = 0.055f;
+  public static final int   ATTACK_SUSPENSION_MS = 500;
+  public static final int   ATTACK_BUFFER_SIZE = 3;
 
   /* SILENCE DETECTOR PARAMETERS */
   public static final float SILENCE_THRESHOLD = 0.0001f;
   public static final int   SILENCE_BUFFER_SIZE = 5;
 
   /* PITCH DETECTOR PARAMTERS */
-  public static final int PITCH_DETECTION_DELAY_MS = 80;
+  public static final int PITCH_DETECTION_DELAY_MS = 0;
+  public static final int PITCH_DETECTION_FFT_CYCLES = 3;
 
   private final PianoEvents pianoEvents;
   private volatile double playOutTimeOfLastSilence;
@@ -32,15 +34,13 @@ public class Conductor {
   }
 
   public void setAttackDetected(IAudioRenderTarget target) {
-      pianoEvents.add(new PianoEvent(target.getFrame().playOutTime, playOutTimeOfLastSilence));
+      pianoEvents.add(new PianoEvent(target.getFrame().playOutTime, playOutTimeOfLastSilence, PITCH_DETECTION_DELAY_MS, PITCH_DETECTION_FFT_CYCLES));
   }
 
   public PianoEvents getUndetectedPianoEvents() {
     return pianoEvents.getUndetectedPianoEvents();
   }
 
-  public void setLastSilence(double playOutTime) {
-      playOutTimeOfLastSilence = playOutTime;
-  }
+  public void setLastSilence(double playOutTime) { playOutTimeOfLastSilence = playOutTime;  }
 
 }
