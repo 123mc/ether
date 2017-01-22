@@ -31,16 +31,7 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
 
             if(pianoEvent.isReadyToBePitchDetected(target)) {
                 Piano detectedPiano = pitchDetector.analyze(target);
-
-//                if(!pianoEvent.isVerified()) {
-//                    if (!pianoEvent.hasEnoughPowerInAtLeastOneOctave(detectedPiano)) {
-//                        pianoEvent.dismiss();
-//
-//                    } else {
-//                        pianoEvent.verify();
-//                    }
-//                }
-
+System.err.println(detectedPiano.getPianoNoteWithHighestSpectrumPower());
                 pianoEvent.addPiano(detectedPiano);
             }
 
