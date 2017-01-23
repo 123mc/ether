@@ -47,7 +47,6 @@ public class AttackDetector {
     }
 
     return averageDifferenceSum / frameBuffer.size();
-
   }
 
   private float maxHighestPeak() {

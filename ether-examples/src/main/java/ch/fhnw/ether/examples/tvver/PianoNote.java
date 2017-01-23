@@ -27,15 +27,22 @@ public class PianoNote {
         // HIGH_BORDER = calculateFrequencyOfNextNote(1);
 
         // original approach (calculate middle to previous and next note
-        // LOW_BORDER  = caclulateBorderToNote(-1);
-        // HIGH_BORDER = caclulateBorderToNote(1);
+         LOW_BORDER  = caclulateBorderToNote(-1);
+         HIGH_BORDER = caclulateBorderToNote(1);
 
         // OK-ish approach
         // LOW_BORDER  = FREQUENCY - 0.003f;
         // HIGH_BORDER = FREQUENCY + 0.003f;
 
-        LOW_BORDER  = FREQUENCY * 1.02;
-        HIGH_BORDER = FREQUENCY * 1.065;
+        //LOW_BORDER  = FREQUENCY;// * 1.02;  // * 0.94
+        //HIGH_BORDER = FREQUENCY;// * 1.07; // * 1.072
+
+        // x = 525Hz, x+1 = 530Hz
+        // band von x 520Hz - 527Hz (funktioniert nicht gut)
+
+        // band von x   525.8Hz - 528.9Hz
+        // band von x+1 531Hz - 536Hz
+
 
         int mod     = ((KEY_NUMBER - 1) % Piano.NOTES_IN_OCTAVE);
         SCIENTIFIC_NAME = Piano.LETTER_MAP.get(mod) + OCTAVE;
@@ -71,6 +78,7 @@ public class PianoNote {
 
 
     public boolean includesFrequency(double frequency) {
+   //     System.err.println(frequency+ ">=" +LOW_BORDER +"&&"+ frequency +"<=" + HIGH_BORDER + "=>" + SCIENTIFIC_NAME);
         return frequency >= LOW_BORDER && frequency <= HIGH_BORDER;
     }
 
