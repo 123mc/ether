@@ -30,7 +30,6 @@ public class MadSchPCM2MIDI extends AbstractPCM2MIDI {
 
 	@Override
 	protected void initializePipeline(RenderProgram<IAudioRenderTarget> program) {
-
 		program.addLast(new DCRemove());
 		FFT fft = new FFT(27.5f, AudioUtilities.Window.HANN);
 		fft.addLast(new PitchDetectionPipe(fft, conductor,this));
