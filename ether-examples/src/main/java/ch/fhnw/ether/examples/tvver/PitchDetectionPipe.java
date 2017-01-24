@@ -76,8 +76,8 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
      */
     private void printFftFreqLive(){
         Piano piano = new Piano();
-        float[] freqs = piano.getAllFrequencies();System.out.println("lol 1 ");
-        float[] freqAnal = getHighestFreq(freqs);System.out.println("lol 1 ");
+        float[] freqs = piano.getAllFrequencies();
+        float[] freqAnal = getHighestFreq(freqs);
         float highestFreqPower = freqAnal[0];
         double highestFreq = freqAnal[1];
 
