@@ -32,6 +32,7 @@ public class PianoEvent {
   }};
 
   public PianoEvent(double attack, double lastSilence, int delayMs, int fftCycles) {
+//    System.out.println((char)27 + "[32m"+ delayMs + (char)27 + "[0m");
     playOutTimeOfAttack = attack;
     playOutTimeOfLastSilence = lastSilence;
     pitchDetectionDelayMs = delayMs;
@@ -83,7 +84,8 @@ public class PianoEvent {
   }
 
   public boolean isReadyToBePitchDetected(IAudioRenderTarget target) {
-    return (target.getFrame().playOutTime - getDelayInSeconds() > getPlayOutTimeOfLastSilence());
+    //System.out.println((char)27 + "[31m"+      target.getFrame().playOutTime + "-"+ getDelayInSeconds() +">"+getPlayOutTimeOfAttack  + (char)27 + "[0m");
+    return (target.getFrame().playOutTime - getDelayInSeconds() > getPlayOutTimeOfAttack());//getPlayOutTimeOfLastSilence & getDelayInSeconds() = immer 0
   }
 
   private float getDelayInSeconds() {
@@ -105,13 +107,6 @@ public class PianoEvent {
   public void detectPianoNote() {
 
     System.out.println("Trying to detect piano note with attack at play out time:  " + getPlayOutTimeOfAttack() );
-/*
-    System.out.println("Available pianos with highest power in spectrum");
-    System.out.println("----");
-
-    System.out.println(detectedPianos.get(0).getHeaderRow());
-*/
-
     ArrayList<String> pianoNotesWithHighestPower = new ArrayList<>();
 
     for(Piano piano : detectedPianos) {

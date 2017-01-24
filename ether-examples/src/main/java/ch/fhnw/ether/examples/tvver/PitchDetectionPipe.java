@@ -25,11 +25,13 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
     @Override
     protected void run(IAudioRenderTarget target) throws RenderCommandException {
         PianoEvents undetectedPianoEvents = conductor.getUndetectedPianoEvents();
-
+if(undetectedPianoEvents.size()>=1) {
+    System.out.println("--->" + undetectedPianoEvents.size() + " time: "+undetectedPianoEvents.getLast().getPlayOutTimeOfAttack());
+}
         for(int i = 0; i < undetectedPianoEvents.size(); i++) {
             PianoEvent pianoEvent = undetectedPianoEvents.get(i);
 
-            if(pianoEvent.isReadyToBePitchDetected(target)) {
+            if(pianoEvent.isReadyToBePitchDetected(target)) {//immer true
                 Piano detectedPiano = pitchDetector.analyze(target);
 
 //                if(!pianoEvent.isVerified()) {

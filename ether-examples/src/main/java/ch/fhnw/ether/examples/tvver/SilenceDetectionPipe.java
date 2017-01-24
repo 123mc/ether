@@ -23,6 +23,7 @@ public class SilenceDetectionPipe extends AbstractRenderCommand<IAudioRenderTarg
       try {
         double playOutTimeOfLastSilence = silenceDetector.analyze(target); // returns negative value if no silence detected
         if(playOutTimeOfLastSilence > 0.0d) {
+System.err.println(playOutTimeOfLastSilence);
           conductor.setLastSilence(playOutTimeOfLastSilence);
         }
       } catch (Throwable t) {

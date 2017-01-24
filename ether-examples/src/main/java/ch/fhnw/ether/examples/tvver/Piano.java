@@ -68,8 +68,10 @@ public class Piano {
             if(fft != null) {
                 pianoNote.setSpectrumPower(fft);
             }
+System.out.println((char)43 + ""+pianoNote+"" + (char)27 + "[0m");
             pianoNotes.add(pianoNote);
         }
+System.out.println("---------------------------");
     }
 
     public static double calculateFrequency(int relativeIndexToC4) {

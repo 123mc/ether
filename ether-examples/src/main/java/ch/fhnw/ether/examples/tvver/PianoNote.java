@@ -27,15 +27,15 @@ public class PianoNote {
         // HIGH_BORDER = calculateFrequencyOfNextNote(1);
 
         // original approach (calculate middle to previous and next note
-        // LOW_BORDER  = caclulateBorderToNote(-1);
-        // HIGH_BORDER = caclulateBorderToNote(1);
+         LOW_BORDER  = caclulateBorderToNote(-1);
+         HIGH_BORDER = caclulateBorderToNote(1);
 
         // OK-ish approach
         // LOW_BORDER  = FREQUENCY - 0.003f;
         // HIGH_BORDER = FREQUENCY + 0.003f;
 
-        LOW_BORDER  = FREQUENCY * 1.02;
-        HIGH_BORDER = FREQUENCY * 1.065;
+        //LOW_BORDER  = FREQUENCY /** 1.02*/;
+        //HIGH_BORDER = FREQUENCY /** 1.065*/;
 
         int mod     = ((KEY_NUMBER - 1) % Piano.NOTES_IN_OCTAVE);
         SCIENTIFIC_NAME = Piano.LETTER_MAP.get(mod) + OCTAVE;
@@ -49,9 +49,14 @@ public class PianoNote {
     }
 
     public String toString() {
-        return new String(
-                "Key # " + KEY_NUMBER + " (" + SCIENTIFIC_NAME + "): " + FREQUENCY + " (from " + LOW_BORDER + " to " + HIGH_BORDER + ")\n"
-        );
+        String res = "Key # " + KEY_NUMBER + " (" + SCIENTIFIC_NAME + "): " + FREQUENCY + " (from " + LOW_BORDER + " to " + HIGH_BORDER+")"+"\n";
+
+        String power = String.format("%.3g%n", spectrumPower);
+        if(Math.floor(spectrumPower)>0){
+            res += "   pwr =>"+power+" ";
+        }
+        res += "\n";
+        return res;
     }
 
     public String spectrumHeadersToString() {

@@ -7,7 +7,7 @@ public class Conductor {
   /* ATTACK DETECTOR PARAMETERS */
   public static final float ATTACK_DIFFERENCE_THRESHOLD = 0.005f;
   public static final float ATTACK_ENERGY_THRESHOLD = 0.055f;
-  public static final int   ATTACK_SUSPENSION_MS = 500;
+  public static final int   ATTACK_SUSPENSION_MS = 700;
   public static final int   ATTACK_BUFFER_SIZE = 3;
 
   /* SILENCE DETECTOR PARAMETERS */
