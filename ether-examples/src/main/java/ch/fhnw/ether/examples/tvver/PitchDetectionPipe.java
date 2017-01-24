@@ -44,22 +44,6 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
     protected void run(IAudioRenderTarget target) throws RenderCommandException {
         myTarget = target;
         this.printFftFreqLive();
-       /* PianoEvents undetectedPianoEvents = conductor.getUndetectedPianoEvents();
-
-        for(int i = 0; i < undetectedPianoEvents.size(); i++) {
-            PianoEvent pianoEvent = undetectedPianoEvents.get(i);
-
-            if(pianoEvent.isReadyToBePitchDetected(target)) {
-                Piano detectedPiano = pitchDetector.analyze(target);
-                pianoEvent.addPiano(detectedPiano);
-            }
-
-            if(pianoEvent.isReadyToDetectPianoNote()) {
-                pianoEvent.detectPianoNote();
-  //              conductor.noteOn(pianoEvent.getDetectedPianoNote().getMidiNumber());
-            }
-
-        }*/
     }
 
     /**
@@ -88,6 +72,12 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
         return res;
     }
 
+    /**
+     * prints the freq on the console
+     * detects the pitch
+     * detects the note
+     * send the note
+     */
     private void printFftFreqLive(){
         Piano piano = new Piano();
         float[] freqs = piano.getAllFrequencies();
@@ -97,9 +87,6 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
         float secondHighestFreqPower = freqAnal[2];
         double secondHighestFreq = freqAnal[3];
 
-
-     //   PianoNote foundNote = piano.findPianoNoteByFrequency(highestFreq);
-//        System.err.println("highestFreq: "+highestFreq);
         PianoNote foundNote = findPianoNoteByFrequency(highestFreq);
         totalFrames++;
         totalEnergy += highestFreqPower;
@@ -109,71 +96,35 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
         if(recentAverage<(getTotalAvgEnergy()*0.20)){
             recentAverage = (int) Math.floor(getTotalAvgEnergy()*0.20);
         }
-//        System.out.println(highestFreqPower+"> TotalPwr:"+getTotalAvgEnergy()+"  recentPwr: "+(recentAverage));
-        if(blockCount <0 && null!=foundNote && highestFreqPower > (getTotalAvgEnergy()+(recentAverage))){ //cpn(6)=>12 oder cpn(1|11)=>29
+        System.out.println(highestFreqPower+"> TotalPwr:"+getTotalAvgEnergy()+"  recentPwr: "+(recentAverage));
+        //System.out.println("oder "+(highestFreqPower+">"+recentAverage*6));
+        if(blockCount <0 && null!=foundNote && (( highestFreqPower > (getTotalAvgEnergy()+(recentAverage))) /*|| highestFreqPower>(recentAverage*3)*/)){ //cpn(6)=>12 oder cpn(1|11)=>29
             blockCount = 30;
             madSchPcm2Midi.noteOn(foundNote.getMidiNumber(),64);
             System.out.print(String.format("%05d%n", (int) highestFreq));
             System.out.println((char)27 + "[32m"+"=>"+foundNote.getScientificName()+" ("+foundNote.getMidiNumber()+")"+"  "+this.strengthToString(highestFreqPower) + "("+highestFreqPower+")"+ (char)27 + "[0m");
-/*
-            boolean cNoteAndSecoundClose = false;
 
             //secound highest note
             PianoNote foundSecondNote = findPianoNoteByFrequency(secondHighestFreq);
-      //      madSchPcm2Midi.noteOn(foundSecondNote.getMidiNumber(),64);
             System.out.print(String.format("%05d%n", (int) secondHighestFreq));
             System.out.println((char)27 + "[35m"+"=>"+foundSecondNote.getScientificName()+" ("+foundSecondNote.getMidiNumber()+")"+"  "+this.strengthToString(secondHighestFreqPower) + "("+secondHighestFreqPower+")"+ (char)27 + "[0m");
-
-            //conductor note
-            PianoNote cFoundNote = getLastIdentifiedNote();
-            if(null != cFoundNote) {
-                System.out.print(String.format("%05d%n", (int) cFoundNote.getFrequency()));
-                System.out.println((char) 27 + "[36m" + "=>" + cFoundNote.getScientificName() + " (" + cFoundNote.getMidiNumber() + ")" + "  " + this.strengthToString(cFoundNote.getSpectrumPower()) + "(" + cFoundNote.getFrequency() + ")" + (char) 27 + "[0m");
-                if(
-                        Math.abs(cFoundNote.getMidiNumber()-foundSecondNote.getMidiNumber())
-                                <
-                                Math.abs(cFoundNote.getFrequency()-foundNote.getMidiNumber())
-                        ){
-                        cNoteAndSecoundClose=true;
-                        //madSchPcm2Midi.noteOn(foundSecondNote.getMidiNumber(),64);
-                }
-            }else{
-                System.out.println((char) 27 + "[36m" + " :( no cNote " + (char) 27 + "[0m");
-            }
-
-            if(!cNoteAndSecoundClose){
-                //madSchPcm2Midi.noteOn(foundNote.getMidiNumber(),64);
-            }
-*/
         }
         blockCount--;
         System.out.print(String.format("%05d%n", (int) highestFreq));
         System.out.println("=>K#A (XX)"+this.strengthToString(highestFreqPower) + "("+highestFreqPower+")");
     }
 
-    private PianoNote getLastIdentifiedNote(){
-        PianoEvents pes = conductor.getUndetectedPianoEvents();
-        for (int i = 0; i < pes.size(); i++) {
-            PianoEvent pe = pes.get(i);
-            PianoNote pn = pe.getDetectedPianoNote();
-            if(pe.isReadyToBePitchDetected(myTarget)) {
-                Piano detectedPiano = pitchDetector.analyze(myTarget);
-                pe.addPiano(detectedPiano);
-            }
-
-            if(pe.isReadyToDetectPianoNote()) {
-                pe.detectPianoNote();
-                return pe.getDetectedPianoNote();
-            }
-        }
-        return null;
-    }
 
     private int getTotalAvgEnergy(){
         int res = (int) Math.floor(((totalEnergy/totalFrames)/*0.75*/));//
         return res;
     }
 
+    /**
+     * Only for display reasons
+     * @param highestFreqPower
+     * @return String of param times ":"
+     */
     private String strengthToString(float highestFreqPower){
         String strength = "";
         for (int i = 0; i < highestFreqPower; i++) {
@@ -182,28 +133,21 @@ public class PitchDetectionPipe extends AbstractRenderCommand<IAudioRenderTarget
         return strength;
     }
 
+    /**
+     *
+     * @param highestFreq
+     * @return pianonote for that freq
+     */
     private PianoNote findPianoNoteByFrequency(double highestFreq){
-        Piano fuck = new Piano();
-        List<PianoNote> singleFucks =  fuck.getPianoNotes();
-        PianoNote theFuck = null;
-        for (PianoNote singleFuck : singleFucks ) {
-            //System.out.println(highestFreq+ ">" +singleFuck.getLowBorder() +"&&"+ highestFreq+ "<"+ singleFuck.getHighBorder());
-            if(highestFreq > singleFuck.getLowBorder() && highestFreq < singleFuck.getHighBorder()){
-                theFuck = singleFuck;
+        Piano piano = new Piano();
+        List<PianoNote> pianoNotes =  piano.getPianoNotes();
+        PianoNote pianoNote = null;
+        for (PianoNote note : pianoNotes ) {
+            if(highestFreq > note.getLowBorder() && highestFreq < note.getHighBorder()){
+                pianoNote = note;
             }
         }
-        //System.out.println("ccc  "+theFuck);
-        return theFuck;
-
-        /*Piano p = new Piano();
-        float[] freqs = p.getAllFrequencies();
-        PianoNote x = null;
-        for (int i = 0; i+1 < freqs.length; i++) {
-            if(Math.floor(freqs[i]) == Math.floor(highestFreq)){
-                x = new PianoNote(i);
-            }
-        }
-        return x; */
+        return pianoNote;
     }
 
 }
