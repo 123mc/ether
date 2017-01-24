@@ -152,6 +152,13 @@ public class Piano {
         return powerSum / NOTES_IN_OCTAVE;
     }
 
+    public PianoNote getLowestPianoNote() {
+        return pianoNotes.get(0);
+    }
+
+    public PianoNote getHighestPianoNote() {
+        return pianoNotes.get(pianoNotes.size() - 1);
+    }
 
 
 }

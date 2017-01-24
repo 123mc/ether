@@ -15,9 +15,9 @@ public class PitchDetector {
         System.out.println("PitchDetector");
     }
     
-    public Piano analyze(IAudioRenderTarget target) {
-        return new Piano(fft, target.getFrame().playOutTime);
-    }
+//    public Piano analyze(IAudioRenderTarget target) {
+//        // return new Piano(fft, target.getFrame().playOutTime);
+//    }
 
 
 }

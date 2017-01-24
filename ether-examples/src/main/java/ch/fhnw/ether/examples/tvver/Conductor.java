@@ -16,7 +16,7 @@ public class Conductor {
 
   /* PITCH DETECTOR PARAMTERS */
   public static final int PITCH_DETECTION_DELAY_MS = 0;
-  public static final int PITCH_DETECTION_FFT_CYCLES = 3;
+  public static final int PITCH_DETECTION_FFT_CYCLES = 1;
 
   private final PianoEvents pianoEvents;
   private volatile double playOutTimeOfLastSilence;
